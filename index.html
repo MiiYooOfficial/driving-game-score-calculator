@@ -236,7 +236,7 @@ function calculateScore() {
       baseScore = 900;
     }
     
-    let score = baseScore - collisions * 100 * (2 - speed);
+    let score = Math.max(0, baseScore - collisions * 100 * (2 - speed));
 
     scoreDiv.innerHTML = `
         <div style="font-size:22px;">
