@@ -226,16 +226,7 @@ function calculateScore() {
     const collisions = parseInt(c);
     const speed = parseFloat(s);
 
-    if (speed <= 0) {
-        error.textContent = "Playback speed must be greater than 0.";
-        return;
-    }
-
-    if (Math.abs((speed * 100) % 5) > 1e-6) {
-        error.textContent = "Playback speed must be a multiple of 0.05.";
-        return;
-    }
-
+    let score = 1000 - collisions * 100 * (2 - speed)
     let score = Math.max(0, Math.floor(1000 * speed - collisions * 50));
 
     scoreDiv.innerHTML = `
