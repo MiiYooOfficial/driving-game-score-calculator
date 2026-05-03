@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Driving Game Score Calculator</title>
+<title>Racing Game Score Calculator</title>
 
 <style>
 html, body {
@@ -13,58 +13,151 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-/* GREEN SIDEBANDS (match pygame grass) */
+/* ---------------- ROAD SYSTEM ---------------- */
+
+.road-wrapper {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px; /* matches TRACK_WIDTH */
+    height: 200%;
+    z-index: 0;
+    animation: scrollRoad 2.5s linear infinite;
+}
+
+/* ASPHALT BASE */
+.road {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    background: rgb(50,50,50);
+}
+
+/* DASHED LANE LINES */
+.road::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 40px,
+            white 40px,
+            white 80px
+        );
+
+    /* create 4 lane dividers (5 lanes total) */
+    background-size: 20% 100%;
+    background-repeat: repeat-x;
+
+    /* shift them into correct positions */
+    mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        transparent 19%,
+        white 19%, white 21%,
+        transparent 21%, transparent 39%,
+        white 39%, white 41%,
+        transparent 41%, transparent 59%,
+        white 59%, white 61%,
+        transparent 61%, transparent 79%,
+        white 79%, white 81%,
+        transparent 81%, transparent 100%
+    );
+}
+
+/* SIDE WHITE LINES */
+.road::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(white, white) left 40px top / 4px 100% no-repeat,
+        linear-gradient(white, white) right 40px top / 4px 100% no-repeat;
+}
+
+/* BUMPERS (RED/WHITE STRIPES) */
+.bumpers {
+    position: absolute;
+    inset: 0;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            red 0px,
+            red 20px,
+            white 20px,
+            white 40px
+        );
+
+    background-size: 20px 40px;
+
+    /* left + right placement */
+    mask-image:
+        linear-gradient(to right,
+            white 0px, white 20px,
+            transparent 20px, transparent calc(100% - 20px),
+            white calc(100% - 20px), white 100%
+        );
+}
+
+/* SCROLLING */
+@keyframes scrollRoad {
+    from { transform: translate(-50%, 0); }
+    to   { transform: translate(-50%, -50%); }
+}
+
+/* ---------------- UI ---------------- */
+
 body {
-    background: #00ff00;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: black;
 }
 
-/* CENTER PANEL */
 .container {
-    width: 900px;
+    width: 450px;
     background: rgba(255,255,255,0.95);
-    padding: 20px;
+    padding: 25px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     position: relative;
     z-index: 2;
 }
 
-/* ONE-LINE INPUT LAYOUT */
-.row {
-    display: flex;
-    gap: 10px;
-    align-items: end;
-}
-
-.field {
-    flex: 1;
+h1 {
+    text-align: center;
 }
 
 label {
+    display: block;
+    margin-top: 15px;
     font-weight: bold;
-    font-size: 12px;
 }
 
-input {
+input, button {
     width: 100%;
-    padding: 6px;
-    font-size: 14px;
-    box-sizing: border-box;
+    padding: 8px;
+    margin-top: 5px;
+    font-size: 16px;
 }
 
 button {
-    padding: 8px 14px;
-    cursor: pointer;
-    background: #f4d03f;
+    margin-top: 20px;
+    background: #3498db;
+    color: white;
     border: none;
     font-weight: bold;
+    cursor: pointer;
 }
 
 button:hover {
-    background: #f1c40f;
+    background: #2980b9;
 }
 
 .error {
@@ -73,58 +166,9 @@ button:hover {
 }
 
 .score {
-    margin-top: 10px;
-    font-size: 18px;
+    margin-top: 15px;
+    font-size: 20px;
     font-weight: bold;
-}
-
-/* ---------------- ROAD SYSTEM ---------------- */
-
-.road-container {
-    position: fixed;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: 420px;  /* match pygame track scale */
-    height: 100%;
-    overflow: hidden;
-    z-index: 1;
-}
-
-/* full road strip (one tile) */
-.road {
-    position: absolute;
-    width: 100%;
-    height: 200%;
-    background: #323232;
-}
-
-/* lane markings */
-.lane-line {
-    position: absolute;
-    width: 4px;
-    height: 40px;
-    background: white;
-}
-
-/* bumpers */
-.bumper {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-}
-
-/* animation container */
-.scroll {
-    position: absolute;
-    width: 100%;
-    height: 200%;
-    animation: scrollUp 2.5s linear infinite;
-}
-
-@keyframes scrollUp {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-50%); }
 }
 </style>
 </head>
@@ -132,85 +176,76 @@ button:hover {
 <body>
 
 <!-- ROAD -->
-<div class="road-container">
-    <div class="scroll">
-
-        <!-- TILE 1 -->
-        <div class="road" style="top:0%"></div>
-
-        <!-- TILE 2 (duplicate for seamless looping) -->
-        <div class="road" style="top:100%"></div>
-
+<div class="road-wrapper">
+    <div class="road">
+        <div class="bumpers"></div>
+    </div>
+    <div class="road">
+        <div class="bumpers"></div>
     </div>
 </div>
 
 <!-- UI -->
 <div class="container">
-    <div class="row">
+    <h1>Racing Game Score Calculator</h1>
 
-        <div class="field">
-            <label>Collisions</label>
-            <input type="text" id="collisions">
-        </div>
+    <label>Number of Collisions</label>
+    <input type="text" id="collisions">
 
-        <div class="field">
-            <label>Playback Speed</label>
-            <input type="text" id="speed">
-        </div>
+    <label>Playback Speed</label>
+    <input type="text" id="speed">
 
-        <button onclick="calculateScore()">Calculate</button>
-    </div>
+    <button onclick="calculateScore()">Calculate Score</button>
 
     <div class="error" id="error"></div>
-    <div class="score" id="score"></div>
+    <div class="score" id="scoreDisplay"></div>
 </div>
 
 <script>
 function calculateScore() {
-    const collisionsStr = document.getElementById("collisions").value.trim();
-    const speedStr = document.getElementById("speed").value.trim();
+
+    const c = document.getElementById("collisions").value.trim();
+    const s = document.getElementById("speed").value.trim();
 
     const error = document.getElementById("error");
-    const scoreBox = document.getElementById("score");
+    const scoreDiv = document.getElementById("scoreDisplay");
 
     error.textContent = "";
-    scoreBox.textContent = "";
+    scoreDiv.innerHTML = "";
 
-    // integer validation
-    if (!/^[0-9]+$/.test(collisionsStr)) {
+    if (!/^[0-9]+$/.test(c)) {
         error.textContent = "Collisions must be a positive integer.";
         return;
     }
 
-    const collisions = parseInt(collisionsStr, 10);
-
-    if (collisions < 0) {
-        error.textContent = "Collisions must be positive.";
+    if (!/^[0-9]*\.?[0-9]+$/.test(s)) {
+        error.textContent = "Playback speed must be a number.";
         return;
     }
 
-    // float validation
-    if (!/^[0-9]+(\.[0-9]+)?$/.test(speedStr)) {
-        error.textContent = "Playback speed must be numeric.";
-        return;
-    }
-
-    const speed = parseFloat(speedStr);
+    const collisions = parseInt(c);
+    const speed = parseFloat(s);
 
     if (speed <= 0) {
-        error.textContent = "Playback speed must be positive.";
+        error.textContent = "Playback speed must be greater than 0.";
         return;
     }
 
-    if (Math.round(speed * 100) % 5 !== 0) {
-        error.textContent = "Playback speed must be in multiples of 0.05.";
+    if (Math.abs((speed * 100) % 5) > 1e-6) {
+        error.textContent = "Playback speed must be a multiple of 0.05.";
         return;
     }
 
-    let score = Math.max(0, 1000 - collisions * 50);
-    score = Math.round(score * speed);
+    let score = Math.max(0, Math.floor(1000 * speed - collisions * 50));
 
-    scoreBox.textContent = "Final Score: " + score;
+    scoreDiv.innerHTML = `
+        <div style="font-size:22px;">
+            Your Final Score: <strong>${score}</strong> 🏁
+        </div>
+        <div style="margin-top:10px;">
+            Go comment your score on the video!
+        </div>
+    `;
 }
 </script>
 
