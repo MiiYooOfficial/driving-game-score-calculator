@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Racing Game Score Calculator</title>
+<title>Driving Game Score Calculator</title>
 
 <style>
 html, body {
@@ -13,20 +13,28 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-/* ---------------- ROAD SYSTEM ---------------- */
+/* GREEN SIDES */
+body {
+    background: rgb(0,255,0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ---------------- ROAD ---------------- */
 
 .road-wrapper {
     position: fixed;
-    top: 0;
+    top: -50%; /* shift up so downward scroll loops nicely */
     left: 50%;
     transform: translateX(-50%);
-    width: 400px; /* matches TRACK_WIDTH */
+    width: 400px;
     height: 200%;
     z-index: 0;
     animation: scrollRoad 2.5s linear infinite;
 }
 
-/* ASPHALT BASE */
+/* ASPHALT */
 .road {
     position: relative;
     width: 100%;
@@ -49,11 +57,9 @@ html, body {
             white 80px
         );
 
-    /* create 4 lane dividers (5 lanes total) */
     background-size: 20% 100%;
     background-repeat: repeat-x;
 
-    /* shift them into correct positions */
     mask-image: linear-gradient(
         to right,
         transparent 0%,
@@ -80,7 +86,7 @@ html, body {
         linear-gradient(white, white) right 40px top / 4px 100% no-repeat;
 }
 
-/* BUMPERS (RED/WHITE STRIPES) */
+/* BUMPERS */
 .bumpers {
     position: absolute;
     inset: 0;
@@ -94,9 +100,6 @@ html, body {
             white 40px
         );
 
-    background-size: 20px 40px;
-
-    /* left + right placement */
     mask-image:
         linear-gradient(to right,
             white 0px, white 20px,
@@ -105,20 +108,13 @@ html, body {
         );
 }
 
-/* SCROLLING */
+/* SCROLL DOWNWARD (reverse direction) */
 @keyframes scrollRoad {
-    from { transform: translate(-50%, 0); }
-    to   { transform: translate(-50%, -50%); }
+    from { transform: translate(-50%, -50%); }
+    to   { transform: translate(-50%, 0%); }
 }
 
 /* ---------------- UI ---------------- */
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: black;
-}
 
 .container {
     width: 450px;
@@ -132,6 +128,8 @@ body {
 
 h1 {
     text-align: center;
+    white-space: nowrap; /* forces one line */
+    font-size: 22px;
 }
 
 label {
@@ -177,17 +175,13 @@ button:hover {
 
 <!-- ROAD -->
 <div class="road-wrapper">
-    <div class="road">
-        <div class="bumpers"></div>
-    </div>
-    <div class="road">
-        <div class="bumpers"></div>
-    </div>
+    <div class="road"><div class="bumpers"></div></div>
+    <div class="road"><div class="bumpers"></div></div>
 </div>
 
 <!-- UI -->
 <div class="container">
-    <h1>Racing Game Score Calculator</h1>
+    <h1>Driving Game Score Calculator</h1>
 
     <label>Number of Collisions</label>
     <input type="text" id="collisions">
