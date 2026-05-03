@@ -226,7 +226,17 @@ function calculateScore() {
     const collisions = parseInt(c);
     const speed = parseFloat(s);
 
-    let score = 1000 - collisions * 100 * (2 - speed);
+    let baseScore;
+
+    if (speed === 1.5) {
+      baseScore = 1000;
+    } else if (speed === 1.25) {
+      baseScore = 900;
+    } else if (speed === 1) {
+      baseScore = 800;
+    }
+    
+    let score = baseScore - collisions * 100 * (2 - speed);
 
     scoreDiv.innerHTML = `
         <div style="font-size:22px;">
