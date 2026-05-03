@@ -187,12 +187,12 @@ button:hover {
 
 <!-- UI -->
 <div class="container">
-    <h1>Racing Game Score Calculator</h1>
+    <h1>Driving Game Score Calculator</h1>
 
     <label>Number of Collisions</label>
     <input type="text" id="collisions">
 
-    <label>Playback Speed</label>
+    <label>Playback Speed (1 → easy, 1.25 → medium, 1.5 → hard)</label>
     <input type="text" id="speed">
 
     <button onclick="calculateScore()">Calculate Score</button>
@@ -218,8 +218,8 @@ function calculateScore() {
         return;
     }
 
-    if (!/^[0-9]*\.?[0-9]+$/.test(s)) {
-        error.textContent = "Playback speed must be a number.";
+    if (!/^(1(\.25|\.5)?)$/.test(s)) {
+        error.textContent = "Playback speed must be 1, 1.25, or 1.5.";
         return;
     }
 
