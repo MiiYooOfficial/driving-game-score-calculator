@@ -13,20 +13,17 @@ html, body {
     font-family: Arial, sans-serif;
 }
 
-/* ---------------- ROAD SYSTEM ---------------- */
-
 .road-wrapper {
     position: fixed;
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px; /* matches TRACK_WIDTH */
+    width: 400px;
     height: 200%;
     z-index: 0;
     animation: scrollRoad 2.5s linear infinite;
 }
 
-/* ASPHALT BASE */
 .road {
     position: relative;
     width: 100%;
@@ -34,7 +31,6 @@ html, body {
     background: rgb(50,50,50);
 }
 
-/* DASHED LANE LINES */
 .road::before {
     content: "";
     position: absolute;
@@ -49,11 +45,9 @@ html, body {
             white 80px
         );
 
-    /* create 4 lane dividers (5 lanes total) */
     background-size: 20% 100%;
     background-repeat: repeat-x;
 
-    /* shift them into correct positions */
     mask-image: linear-gradient(
         to right,
         transparent 0%,
@@ -69,7 +63,6 @@ html, body {
     );
 }
 
-/* SIDE WHITE LINES */
 .road::after {
     content: "";
     position: absolute;
@@ -80,7 +73,6 @@ html, body {
         linear-gradient(white, white) right 40px top / 4px 100% no-repeat;
 }
 
-/* BUMPERS (RED/WHITE STRIPES) */
 .bumpers {
     position: absolute;
     inset: 0;
@@ -96,7 +88,6 @@ html, body {
 
     background-size: 20px 40px;
 
-    /* left + right placement */
     mask-image:
         linear-gradient(to right,
             white 0px, white 20px,
@@ -105,13 +96,10 @@ html, body {
         );
 }
 
-/* SCROLLING */
 @keyframes scrollRoad {
     from { transform: translate(-50%, 0); }
     to   { transform: translate(-50%, -50%); }
 }
-
-/* ---------------- UI ---------------- */
 
 body {
     display: flex;
